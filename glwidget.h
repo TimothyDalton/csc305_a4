@@ -33,6 +33,8 @@ public:
     void about();
     void help();
 
+    QVector<double> rayTracer(QVector3D ray, QVector3D camera);
+
 protected:
     //Initialize the OpenGL Graphics Engine
     void initializeGL();

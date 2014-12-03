@@ -109,12 +109,82 @@ void GLWidget::saveImage( QString fileBuf )
 void GLWidget::makeImage( )
 {   
     QImage myimage(renderWidth, renderHeight, QImage::Format_RGB32);
+    qDebug() << renderWidth;
+    qDebug() << renderHeight;
+    double widthratio = 10.0;
+    double heightratio = renderHeight / (renderWidth/widthratio);
 
-    //TODO: Ray trace a simple circle following the tutorial!
+
+
+
+
+    QVector3D camera(widthratio/2, heightratio/2, 20);
+
+    qDebug() << camera;
+
+    QVector3D pixelposition;
+    QVector3D ray;
+    QVector<double> rayTraceResult;
+
+    for(int i=0;i<renderWidth;i++)
+    {
+        for(int j=0;j<renderHeight;j++)
+        {
+            pixelposition = QVector3D(double(i)*widthratio/renderWidth,double(j)*heightratio/renderHeight,10.0);
+            ray = (pixelposition-camera).normalized();
+            //qDebug() << "ray: " << ray;
+            if(i == renderWidth/2 && j == renderHeight/2)
+                qDebug() << "ray: " << ray;
+
+            rayTraceResult = rayTracer(ray,camera);
+            double c = rayTraceResult[0]*255;
+            myimage.setPixel(i,renderHeight-1-j,qRgb(c,c,c));
+        }
+    }
+
+
+    //myimage.setPixel(i,	j,	qRgb(R,	G,	B));
 
     qtimage=myimage.copy(0, 0,  myimage.width(), myimage.height());
 
     prepareImageDisplay(&myimage);
+}
+
+QVector<double> GLWidget::rayTracer(QVector3D ray, QVector3D camera)
+{
+    QVector<double> result;
+    QVector3D EO;
+    double rr,cc,v,disc;
+
+    result = QVector<double>();
+
+    QVector3D circlepoint(5.0,8.0,5.0);//temp
+    double circleradius = 1; //temp
+
+
+
+    rr = 1;
+
+    EO = circlepoint-camera;
+
+    cc = QVector3D::dotProduct(EO,EO);
+
+    v = QVector3D::dotProduct(EO,ray);
+
+    disc = rr - (cc-v*v);
+
+    if(disc<=0)//ray =! intersect sphere
+    {
+        result.append(0.0);
+        return result;
+    }
+
+    else//intersected
+    {
+        result.append(1.0);
+        return result;
+    }
+
 }
 
 void GLWidget::about()
