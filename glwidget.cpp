@@ -12,6 +12,17 @@
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(parent)
 {
+    double ambience[3] = {0.6,0.6,0.6};
+    double diffusal[3] = {0.6,0.6,0.6};
+    double spec[3] = {0.6,0.6,0.6};
+
+
+
+    Spheres.append(Sphere(QVector3D(5.0,5.0,5.0),2.0,ambience,diffusal,spec));
+    //Spheres.append()
+
+    LightBulbs.append(LightBulb(QVector3D(2.0,2.0,2.0),0.5));
+
 
 }
 
@@ -114,10 +125,6 @@ void GLWidget::makeImage( )
     double widthratio = 10.0;
     double heightratio = renderHeight / (renderWidth/widthratio);
 
-
-
-
-
     QVector3D camera(widthratio/2, heightratio/2, 20);
 
     qDebug() << camera;
@@ -158,17 +165,12 @@ QVector<double> GLWidget::rayTracer(QVector3D ray, QVector3D camera)
 
     result = QVector<double>();
 
-    QVector3D circlepoint(5.0,8.0,5.0);//temp
+    QVector3D circlepoint(5.0,5.0,5.0);//temp
     double circleradius = 1; //temp
 
-
-
     rr = 1;
-
     EO = circlepoint-camera;
-
     cc = QVector3D::dotProduct(EO,EO);
-
     v = QVector3D::dotProduct(EO,ray);
 
     disc = rr - (cc-v*v);

@@ -20,6 +20,53 @@ class GLWidget : public QGLWidget
 {
     Q_OBJECT
 
+    struct LightBulb {
+
+        QVector3D position;
+        double radius;
+
+
+        LightBulb () {}
+
+        LightBulb(QVector3D p, double r)
+        {
+            position = p;
+            radius = r;
+        }
+    };
+
+    struct Sphere {
+
+        QVector3D position;
+        double radius;
+
+        double ambience[3];
+        double diffuse[3];
+        double specular[3];
+
+        Sphere () {}
+
+        Sphere (QVector3D p, double r, double a[3], double d[3], double s[3])
+
+        {
+            position = p;
+            radius = r;
+
+            ambience[0] = a[0];
+            ambience[1] = a[1];
+            ambience[2] = a[2];
+
+            diffuse[0] = d[0];
+            diffuse[1] = d[1];
+            diffuse[2] = d[2];
+
+            specular[0] = s[0];
+            specular[1] = s[1];
+            specular[2] = s[2];
+        }
+
+    };
+
 public:
     //Constructor for GLWidget
     GLWidget(QWidget *parent = 0);
@@ -62,6 +109,8 @@ private:
     void prepareImageDisplay(QImage* myimage); // converts from Qt to opengl format
     QImage glimage, qtimage;  // paintGL will display the gl formatted image
     // keep the qtimage around for saving (one is a copy of the other
+    QVector<LightBulb> LightBulbs;
+    QVector<Sphere> Spheres;
 };
 
 
