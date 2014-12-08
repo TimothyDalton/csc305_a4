@@ -20,6 +20,51 @@ class GLWidget : public QGLWidget
 {
     Q_OBJECT
 
+    struct Triangle {
+
+        QVector3D a;
+        QVector3D b;
+        QVector3D c;
+        QVector3D d;
+        QVector3D e;
+        double ambience[3];
+        double diffuse[3];
+        double specular[3];
+        QVector3D normal;
+
+        double shinyness;
+
+
+        Triangle () {}
+
+        Triangle(QVector3D tA,QVector3D tB,QVector3D tC, double amb[3], double diff[3], double spec[3], double shiny)
+        {
+            a = tA;
+            b = tB;
+            c = tC;
+
+            shinyness = shiny;
+
+
+            ambience[0] = amb[0];
+            ambience[1] = amb[1];
+            ambience[2] = amb[2];
+
+            diffuse[0] = diff[0];
+            diffuse[1] = diff[1];
+            diffuse[2] = diff[2];
+
+            specular[0] = spec[0];
+            specular[1] = spec[1];
+            specular[2] = spec[2];
+
+            normal = QVector3D::crossProduct(c-a,b-a).normalized();
+
+
+
+        }
+    };
+
     struct LightBulb {
 
         QVector3D position;
@@ -45,17 +90,19 @@ class GLWidget : public QGLWidget
         QVector3D position;
         double radius;
 
+        double shinyness;
         double ambience[3];
         double diffuse[3];
         double specular[3];
 
         Sphere () {}
 
-        Sphere (QVector3D p, double r, double a[3], double d[3], double s[3])
+        Sphere (QVector3D p, double r, double a[3], double d[3], double s[3], double shiny)
 
         {
             position = p;
             radius = r;
+            shinyness = shiny;
 
             ambience[0] = a[0];
             ambience[1] = a[1];
@@ -79,7 +126,8 @@ public:
     //Destructor for GLWidget
     ~GLWidget();
 
-    QVector<double> intersectionSpheres(QVector3D ray, QVector3D camera, double closestPolygon);
+    QVector<double> intersects(QVector3D ray, QVector3D rayOrigin, double closestPolygon);
+    QVector<double> shadePolygons(QVector<double> polygoninfo, QVector3D rayOrigin, QVector3D ray);
 
 
     void openImage(QString fileBuf);
@@ -87,8 +135,8 @@ public:
     void makeImage();
     void about();
     void help();
-
     QVector<double> rayTracer(QVector3D ray, QVector3D camera);
+    QVector<double> rayTracer2(QVector3D ray, QVector3D camera);
 
 protected:
     //Initialize the OpenGL Graphics Engine
@@ -119,6 +167,7 @@ private:
     // keep the qtimage around for saving (one is a copy of the other
     QVector<LightBulb> lightBulbs;
     QVector<Sphere> spheres;
+    QVector<Triangle> triangles;
     double sceneAmbience;
 };
 
