@@ -25,7 +25,7 @@ GLWidget::GLWidget(QWidget *parent)
     //spheres.append(Sphere(QVector3D(5.0,7.0,5.0),1.0,ambience,diffusal,spec));
     //Spheres.append()
 
-    lightBulbs.append(LightBulb(QVector3D(2.0,2.0,4.0),0.5,intensity));
+    lightBulbs.append(LightBulb(QVector3D(4.0,2.0,7.0),0.5,intensity));
 
 
 }
@@ -166,7 +166,7 @@ void GLWidget::makeImage( )
 QVector<double> GLWidget::intersectionSpheres(QVector3D ray, QVector3D camera, double closestPolygon)
 {
     QVector<double> result;
-    QVector3D pointOfIntersection,sphereNormal,lightVector,lightPosition,spherePosition,EO;
+    QVector3D pointOfIntersection,sphereNormal,lightVector,lightPosition,spherePosition,EO,cameraVector,h;
     result = QVector<double>(5);
 
     double r,cc,v,disc,d, shadeR,shadeG,shadeB;
@@ -220,6 +220,16 @@ QVector<double> GLWidget::intersectionSpheres(QVector3D ray, QVector3D camera, d
                     shadeG += spheres[i].diffuse[1]*lightBulbs[j].intensity[1]*l;
                     shadeB += spheres[i].diffuse[2]*lightBulbs[j].intensity[2]*l;
 
+                    //Blinn-Phong
+
+                    cameraVector = (camera-pointOfIntersection).normalized();
+                    h = (cameraVector + lightVector).normalized();
+                    double specularmagnitude = QVector3D::dotProduct(sphereNormal,h);
+                    double s = pow(max(0.0,specularmagnitude),100);
+
+                    shadeR += spheres[i].specular[0]*lightBulbs[j].intensity[0]*s;
+                    shadeG += spheres[i].specular[1]*lightBulbs[j].intensity[1]*s;
+                    shadeB += spheres[i].specular[2]*lightBulbs[j].intensity[2]*s;
 
 
 
