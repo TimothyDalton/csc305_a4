@@ -15,13 +15,17 @@ GLWidget::GLWidget(QWidget *parent)
     double ambience[3] = {0.6,0.6,0.6};
     double diffusal[3] = {0.6,0.6,0.6};
     double spec[3] = {0.6,0.6,0.6};
+    double intensity[3] = {0.6,0.6,0.6};
 
+   // QVector3D circlepoint(5.0,5.0,5.0);
 
+    sceneAmbience = 0.2;
 
-    Spheres.append(Sphere(QVector3D(5.0,5.0,5.0),2.0,ambience,diffusal,spec));
+    spheres.append(Sphere(QVector3D(5.0,5.0,5.0),1.0,ambience,diffusal,spec));
+    //spheres.append(Sphere(QVector3D(5.0,7.0,5.0),1.0,ambience,diffusal,spec));
     //Spheres.append()
 
-    LightBulbs.append(LightBulb(QVector3D(2.0,2.0,2.0),0.5));
+    lightBulbs.append(LightBulb(QVector3D(2.0,2.0,4.0),0.5,intensity));
 
 
 }
@@ -144,11 +148,13 @@ void GLWidget::makeImage( )
                 qDebug() << "ray: " << ray;
 
             rayTraceResult = rayTracer(ray,camera);
-            double c = rayTraceResult[0]*255;
-            myimage.setPixel(i,renderHeight-1-j,qRgb(c,c,c));
+
+            double r = rayTraceResult[1]*255;
+            double g = rayTraceResult[2]*255;
+            double b = rayTraceResult[3]*255;
+            myimage.setPixel(i,renderHeight-1-j,qRgb(r,g,b));
         }
     }
-
 
     //myimage.setPixel(i,	j,	qRgb(R,	G,	B));
 
@@ -157,35 +163,113 @@ void GLWidget::makeImage( )
     prepareImageDisplay(&myimage);
 }
 
-QVector<double> GLWidget::rayTracer(QVector3D ray, QVector3D camera)
+QVector<double> GLWidget::intersectionSpheres(QVector3D ray, QVector3D camera, double closestPolygon)
 {
     QVector<double> result;
+    QVector3D pointOfIntersection,sphereNormal,lightVector,lightPosition,spherePosition,EO;
+    result = QVector<double>(5);
+
+    double r,cc,v,disc,d, shadeR,shadeG,shadeB;
+
+
+    result[0] = 0;
+
+    for(int i=0;i<spheres.length();i++)//sphere index
+    {
+        r = spheres[i].radius;
+        spherePosition = spheres[i].position;
+
+
+
+        EO = spherePosition-camera;
+
+        cc = QVector3D::dotProduct(EO,EO);
+        v = QVector3D::dotProduct(EO,ray);
+
+        disc = r*r - (cc-v*v);
+
+        if(disc>0)
+        {
+            d = sqrt(disc);
+            if(v-d<closestPolygon)
+            {
+                closestPolygon = v-d;
+                result[0] = 1;
+                pointOfIntersection = camera + (v-d)*ray;
+
+
+                //Ambience
+
+                shadeR = spheres[i].ambience[0]*sceneAmbience;
+                shadeG = spheres[i].ambience[1]*sceneAmbience;
+                shadeB = spheres[i].ambience[2]*sceneAmbience;
+
+                for(int j=0;j<lightBulbs.size();j++)
+                {
+
+                    lightPosition = lightBulbs[j].position;
+
+                    //Lambertian
+
+                    sphereNormal = (pointOfIntersection - spherePosition).normalized();
+                    lightVector = (lightPosition - pointOfIntersection).normalized();
+                    double lightmagnitude = QVector3D::dotProduct(sphereNormal,lightVector);
+                    double l = max(0.0,(lightmagnitude));
+
+                    shadeR += spheres[i].diffuse[0]*lightBulbs[j].intensity[0]*l;
+                    shadeG += spheres[i].diffuse[1]*lightBulbs[j].intensity[1]*l;
+                    shadeB += spheres[i].diffuse[2]*lightBulbs[j].intensity[2]*l;
+
+
+
+
+
+                }
+                result[1] = shadeR;
+                result[2] = shadeG;
+                result[3] = shadeB;
+            }
+        }
+
+    }
+
+    result[4] = closestPolygon;
+    return result;
+
+}
+
+QVector<double> GLWidget::rayTracer(QVector3D ray, QVector3D camera)
+{
+    QVector<double> result(5),intersectionResult;
+    double closestPolygon = pow(10,10);
     QVector3D EO;
+
     double rr,cc,v,disc;
 
-    result = QVector<double>();
-
-    QVector3D circlepoint(5.0,5.0,5.0);//temp
-    double circleradius = 1; //temp
-
-    rr = 1;
-    EO = circlepoint-camera;
-    cc = QVector3D::dotProduct(EO,EO);
-    v = QVector3D::dotProduct(EO,ray);
-
-    disc = rr - (cc-v*v);
-
-    if(disc<=0)//ray =! intersect sphere
+    intersectionResult = intersectionSpheres(ray,camera,closestPolygon);
+    if(intersectionResult[0] = 1)
     {
-        result.append(0.0);
-        return result;
+        result[1] = intersectionResult[1];
+        result[2] = intersectionResult[2];
+        result[3] = intersectionResult[3];
+        closestPolygon = intersectionResult[4];
+
     }
 
-    else//intersected
-    {
-        result.append(1.0);
-        return result;
-    }
+    return result;
+
+
+//    if(disc<=0)//ray =! intersect sphere
+//    {
+//        result.append(0.0);
+//        return result;
+//    }
+
+//    else//intersected
+//    {
+//        result.append(1.0);
+//        return result;
+//    }
 
 }
 

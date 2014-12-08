@@ -24,14 +24,19 @@ class GLWidget : public QGLWidget
 
         QVector3D position;
         double radius;
+        double intensity[3];
 
 
         LightBulb () {}
 
-        LightBulb(QVector3D p, double r)
+        LightBulb(QVector3D p, double r, double intens[3])
         {
             position = p;
             radius = r;
+            intensity[0] = intens[0];
+            intensity[1] = intens[1];
+            intensity[2] = intens[2];
+
         }
     };
 
@@ -74,6 +79,9 @@ public:
     //Destructor for GLWidget
     ~GLWidget();
 
+    QVector<double> intersectionSpheres(QVector3D ray, QVector3D camera, double closestPolygon);
+
+
     void openImage(QString fileBuf);
     void saveImage( QString fileBuf);
     void makeImage();
@@ -109,8 +117,9 @@ private:
     void prepareImageDisplay(QImage* myimage); // converts from Qt to opengl format
     QImage glimage, qtimage;  // paintGL will display the gl formatted image
     // keep the qtimage around for saving (one is a copy of the other
-    QVector<LightBulb> LightBulbs;
-    QVector<Sphere> Spheres;
+    QVector<LightBulb> lightBulbs;
+    QVector<Sphere> spheres;
+    double sceneAmbience;
 };
 
 
