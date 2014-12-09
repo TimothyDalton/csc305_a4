@@ -21,8 +21,22 @@ GLWidget::GLWidget(QWidget *parent)
 
     sceneAmbience = 0.2;
 
+    //BackWall
+
     triangles.append(Triangle(QVector3D(0,0,0),QVector3D(0,10,0),QVector3D(10,10,0),ambience,diffusal,specular,100));
     triangles.append(Triangle(QVector3D(0,0,0),QVector3D(10,10,0),QVector3D(10,0,0),ambience,diffusal,specular,100));
+
+    //LeftWall
+
+    triangles.append(Triangle(QVector3D(0,0,0),QVector3D(0,0,10),QVector3D(0,10,0),ambience,diffusal,specular,100));
+    triangles.append(Triangle(QVector3D(0,0,10),QVector3D(0,10,10),QVector3D(0,10,0),ambience,diffusal,specular,100));
+
+    //Floor
+
+    triangles.append(Triangle(QVector3D(0,0,0),QVector3D(10,0,0),QVector3D(0,0,10),ambience,diffusal,specular,100));
+    triangles.append(Triangle(QVector3D(0,0,10),QVector3D(10,0,0),QVector3D(10,0,10),ambience,diffusal,specular,100));
+
+
 
     spheres.append(Sphere(QVector3D(5.0,5.0,5.0),1.0,ambience,diffusal,specular,100));
     //spheres.append(Sphere(QVector3D(5.0,7.0,5.0),1.0,ambience,diffusal,spec));
