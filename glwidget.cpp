@@ -12,10 +12,15 @@
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(parent)
 {
-    double ambience[3] = {0.6,0.6,0.6};
-    double diffusal[3] = {0.6,0.6,0.6};
-    double specular[3] = {0.6,0.6,0.6};
-    double intensity[3] = {0.6,0.6,0.6};
+    double sphereambience[3] = {0.3,0.3,0.3};
+    double spherediffusal[3] = {0.6,0.6,0.6};
+    double spherespecular[3] = {0.6,0.6,0.6};
+
+    double intensity[3] = {0.8,0.8,0.8};
+
+    double wallambience[3] = {0.2,0.2,0.2};
+    double walldiffusal[3] = {0.2,0.2,0.2};
+    double wallspecular[3] = {0.3,0.3,0.3};
 
    // QVector3D circlepoint(5.0,5.0,5.0);
 
@@ -23,26 +28,54 @@ GLWidget::GLWidget(QWidget *parent)
 
     //BackWall
 
-    triangles.append(Triangle(QVector3D(0,0,0),QVector3D(0,10,0),QVector3D(10,10,0),ambience,diffusal,specular,100));
-    triangles.append(Triangle(QVector3D(0,0,0),QVector3D(10,10,0),QVector3D(10,0,0),ambience,diffusal,specular,100));
+    triangles.append(Triangle(QVector3D(0,0,0),QVector3D(0,10,0),QVector3D(10,10,0),wallambience,walldiffusal,wallspecular,100));
+    triangles.append(Triangle(QVector3D(0,0,0),QVector3D(10,10,0),QVector3D(10,0,0),wallambience,walldiffusal,wallspecular,100));
 
     //LeftWall
 
-    triangles.append(Triangle(QVector3D(0,0,0),QVector3D(0,0,10),QVector3D(0,10,0),ambience,diffusal,specular,100));
-    triangles.append(Triangle(QVector3D(0,0,10),QVector3D(0,10,10),QVector3D(0,10,0),ambience,diffusal,specular,100));
+    triangles.append(Triangle(QVector3D(0,0,0),QVector3D(0,0,10),QVector3D(0,10,0),wallambience,walldiffusal,wallspecular,100));
+    triangles.append(Triangle(QVector3D(0,0,10),QVector3D(0,10,10),QVector3D(0,10,0),wallambience,walldiffusal,wallspecular,100));
 
     //Floor
 
-    triangles.append(Triangle(QVector3D(0,0,0),QVector3D(10,0,0),QVector3D(0,0,10),ambience,diffusal,specular,100));
-    triangles.append(Triangle(QVector3D(0,0,10),QVector3D(10,0,0),QVector3D(10,0,10),ambience,diffusal,specular,100));
+    triangles.append(Triangle(QVector3D(0,0,0),QVector3D(10,0,0),QVector3D(0,0,10),wallambience,walldiffusal,wallspecular,100));
+    triangles.append(Triangle(QVector3D(0,0,10),QVector3D(10,0,0),QVector3D(10,0,10),wallambience,walldiffusal,wallspecular,100));
+
+    //RightWall
+
+    triangles.append(Triangle(QVector3D(10,0,0),QVector3D(10,10,0),QVector3D(10,10,10),wallambience,walldiffusal,wallspecular,100));
+    triangles.append(Triangle(QVector3D(10,0,0),QVector3D(10,10,10),QVector3D(10,0,10),wallambience,walldiffusal,wallspecular,100));
+
+    //Roof
+
+    triangles.append(Triangle(QVector3D(0,10,10),QVector3D(10,10,0),QVector3D(0,10,0),wallambience,walldiffusal,wallspecular,100));
+    triangles.append(Triangle(QVector3D(10,10,10),QVector3D(10,10,0),QVector3D(0,10,10),wallambience,walldiffusal,wallspecular,100));
+
+
+    //BOXERINO////////////////////////////////////////////////////
+
+    //TopWall
+
+    triangles.append(Triangle(QVector3D(0,3,0),QVector3D(3,3,0),QVector3D(3,3,3),wallambience,walldiffusal,wallspecular,100));
+    triangles.append(Triangle(QVector3D(0,3,0),QVector3D(3,3,3),QVector3D(0,3,3),wallambience,walldiffusal,wallspecular,100));
+
+    //RightWall
+
+    triangles.append(Triangle(QVector3D(3,3,0),QVector3D(3,0,0),QVector3D(3,3,3),wallambience,walldiffusal,wallspecular,100));
+    triangles.append(Triangle(QVector3D(3,3,3),QVector3D(3,0,0),QVector3D(3,0,3),wallambience,walldiffusal,wallspecular,100));
+
+    //FrontWall
+
+    triangles.append(Triangle(QVector3D(3,0,3),QVector3D(0,0,3),QVector3D(3,3,3),wallambience,walldiffusal,wallspecular,100));
+    triangles.append(Triangle(QVector3D(3,3,3),QVector3D(0,0,3),QVector3D(0,3,3),wallambience,walldiffusal,wallspecular,100));
 
 
 
-    spheres.append(Sphere(QVector3D(5.0,5.0,5.0),1.0,ambience,diffusal,specular,100));
-    //spheres.append(Sphere(QVector3D(5.0,7.0,5.0),1.0,ambience,diffusal,spec));
-    //Spheres.append()
 
-    lightBulbs.append(LightBulb(QVector3D(4.0,2.0,7.0),0.25,intensity));
+    spheres.append(Sphere(QVector3D(5.0,5.0,5.0),1.0,sphereambience,spherediffusal,spherespecular,100));
+    spheres.append(Sphere(QVector3D(5.0,7.0,5.0),1.0,sphereambience,spherediffusal,spherespecular,100));
+
+    lightBulbs.append(LightBulb(QVector3D(4.0,4.0,10.0),0.25,intensity));
 
 
 }
@@ -158,7 +191,7 @@ void GLWidget::makeImage( )
     {
         for(int j=0;j<renderHeight;j++)
         {
-            pixelposition = QVector3D(double(i)*widthratio/renderWidth,double(j)*heightratio/renderHeight,10.0);
+            pixelposition = QVector3D(double(i)*widthratio/renderWidth,double(j)*heightratio/renderHeight,11.0);
             ray = (pixelposition-camera).normalized();
             //qDebug() << "ray: " << ray;
             if(i == renderWidth/2 && j == renderHeight/2)
@@ -310,7 +343,7 @@ QVector<double> GLWidget::shadePolygons(QVector<double> polygoninfo, QVector3D r
     QVector<double> result(3),checkerino;
     QVector3D surfaceNormal,lightVector,cameraVector,h;
     double ambience[3],diffuse[3],specular[3];
-    double shadeR,shadeG,shadeB,lightVectorDistance,lightMagnitude,l,specularReflection;
+    double shadeR,shadeG,shadeB,lightVectorDistance,lightMagnitude,l,specularReflection,dilutionerinolevel;
 
     QVector3D pointOfIntersection(polygoninfo[1],polygoninfo[2],polygoninfo[3]);
 
@@ -371,7 +404,7 @@ QVector<double> GLWidget::shadePolygons(QVector<double> polygoninfo, QVector3D r
 
         if(checkerino[0] == 1 || checkerino[0] == 4)
         {
-            qDebug() << checkerino[0];
+            //qDebug() << checkerino[0];
             continue;
         }
 
@@ -396,6 +429,17 @@ QVector<double> GLWidget::shadePolygons(QVector<double> polygoninfo, QVector3D r
         shadeG += specular[1]*lightBulbs[i].intensity[1]*s;
         shadeB += specular[2]*lightBulbs[i].intensity[2]*s;
     }
+
+    if(shadeR > 1.0 || shadeG > 1.0 || shadeB > 1.0)
+    {
+        dilutionerinolevel = (max(shadeR,max(shadeG,shadeB))+0.05);
+        shadeR = shadeR/dilutionerinolevel;
+        shadeG = shadeG/dilutionerinolevel;
+        shadeB = shadeB/dilutionerinolevel;
+
+
+    }
+
     result[0] = shadeR;
     result[1] = shadeG;
     result[2] = shadeB;
